@@ -7,6 +7,7 @@ import requests
 import bs4
 import argparse
 import command_line
+import string
 from torrent import Torrent
 from bcolors import bcolors
 from multiprocessing.pool import ThreadPool as Pool
@@ -35,13 +36,15 @@ def get_page_torrent_links(page_url):
 def get_page_torrents(page_url, workers, numbers):
     """ return a list containing Torrent objects
     """
-    pool = Pool(workers)
+    pool = Pool(processes=workers)
     page_links = get_page_torrent_links(page_url)
 
     while len(page_links) > numbers:
         page_links.pop()
 
     torrents = pool.map(get_torrent_info, page_links)
+    pool.close()
+    pool.join()
     return torrents
 
 def get_torrent_info(page_url):
@@ -72,8 +75,10 @@ def get_torrent_info(page_url):
                             size = c_size, seeders = c_seeders, leechers = c_leechers, 
                             update_time = c_update_time, upload_time = c_upload_time)
 
-        print bcolors.OKGREEN + 'Processing torrent info at {} succeeded.'.format(page_url)+ bcolors.ENDC
+        # filter function to remove non-ascii characters from showing up in terminal
+        print bcolors.OKGREEN + 'Processing torrent info at {} succeeded.'.format(filter(lambda x: x in string.printable, page_url))+ bcolors.ENDC
         return torrent
+
     except IndexError:
         print bcolors.FAIL + 'Torrent at {} deleted!'.format(page_url)+ bcolors.ENDC
         return Torrent(title = 'Deleted!')
@@ -162,7 +167,7 @@ def write_torrents_to_file(torrents_list, onlyMagnet = False, allData = True):
         f.close() 
 
     if allData:
-        f = open('top_{}_torrents.txt'.format(len(torrents_list)),'w')
+        f = open('top_{}_torrents.csv'.format(len(torrents_list)),'w')
         for torrent in torrents_list:
             f.write(str(torrent) + csvdelim) 
         f.close()
@@ -182,4 +187,13 @@ def write_to_file(url_list, csv = False):
     f.close() 
 
 if __name__ == '__main__':
-    page_torrents_traverser(command_line.parse_args())
+    
+    # start = timeit.default_timer()
+
+    # page_torrents_traverser(command_line.parse_args())
+    tl = get_page_torrents('https://kat.cr/movies/6/', 8, 25)
+
+    # stop = timeit.default_timer()
+
+    # print stop - start  
+    

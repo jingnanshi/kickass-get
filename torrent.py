@@ -1,6 +1,15 @@
 class Torrent:
 
 	def __init__(self,**kwargs):
+		self.title = None
+		self.magnet = None
+		self.torrent_cache = None
+		self.size = None
+		self.seeders = None
+		self.leechers = None
+		self.update_time = None
+		self.upload_time = None
+
 		try:
 			self.title = kwargs['title']
 			self.magnet = kwargs['magnet']
