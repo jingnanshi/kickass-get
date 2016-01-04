@@ -8,7 +8,7 @@ Users can choose to export all data related to torrents in a csv file or only ex
 * All Kat.cr categories supported: movies, books, music, anime, games, tv, new, apps, xxx and other. 
 * Export data to csv file option
 * Export magnet links to txt file option
-* Multiprocess enabled (default 8 workers, you can change this number according to your CPU cores)
+* Parallel Processing enabled (default 8 workers, you can change this number according to your CPU cores)
 
 
 # Usage
