@@ -44,8 +44,11 @@ class Torrent:
 		self.update_time = update_time
 
 	def __str__(self):
-		return '{}, {}, {}, {}, Seeders: {}, Leechers: {}, Updated at: {}, Uploaded at: {}'.format(self.title, self.magnet, self.torrent_cache, 
+		remove_comma_title = self.title.replace(',','_')
+		result = '{}, {}, {}, {}, Seeders: {}, Leechers: {}, Updated at: {}, Uploaded at: {}'.format(remove_comma_title, self.magnet, self.torrent_cache, 
 				self.size, self.seeders, self.leechers, self.update_time, self.upload_time) 
+		# return filter(lambda x: x in string.printable, result)
+		return result
 
 	def __repr__(self):
 		return self.title 

@@ -8,6 +8,7 @@ import bs4
 import argparse
 import command_line
 import string
+import timeit
 from torrent import Torrent
 from bcolors import bcolors
 from multiprocessing.pool import ThreadPool as Pool
@@ -16,6 +17,9 @@ root_url = 'http://kat.cr'
 
 categories = {'movies' : '/movies', 'new': '/new', 'music': '/music', 'books': '/books', 'xxx':'/xxx',
                 'anime':'/anime', 'tv': '/tv', 'games':'/games', 'apps':'/applications', 'other':'/other' }
+
+# session = requests.session()
+# session.max_redirects = 100
 
 def get_page_magnet_urls(page_url):
     """ get the magnet links on a single page of kat.cr
@@ -29,6 +33,8 @@ def get_page_torrent_links(page_url):
     """ get links to each individual torrent page links on kat.cr page
     """
     response = requests.get(page_url)
+    # response = session.get(page_url)
+
     soup = bs4.BeautifulSoup(response.text,"html.parser")
     page_links = [root_url + a.attrs.get('href') for a in soup.select('a.cellMainLink')]
     return page_links
@@ -43,8 +49,8 @@ def get_page_torrents(page_url, workers, numbers):
         page_links.pop()
 
     torrents = pool.map(get_torrent_info, page_links)
-    pool.close()
-    pool.join()
+    # pool.close()
+    # pool.join()
     return torrents
 
 def get_torrent_info(page_url):
@@ -53,6 +59,7 @@ def get_torrent_info(page_url):
                         leechers, update time and upload time
         return a Torrent object
     """
+    # response = session.get(page_url)
     response = requests.get(page_url)
     soup = bs4.BeautifulSoup(response.text,"html.parser")
 
@@ -87,37 +94,50 @@ def page_torrents_traverser(options):
     """ get total_counts number of torrents (in Torrent objects) on kat.cr
         maximum: 10000
     """
-
-    # base index url
-    index_url = root_url + categories[options.category]
-
-    # per page torrents
-    per_page_torrents = len(get_page_torrent_links(index_url))
-
-    # total counts
-    total_counts = options.counts
-    assert (total_counts <= 10000), "Maximum Counts Exceeded! Maximum 10000 links."
-    page_torrents = []
-
-    if total_counts < per_page_torrents:
-        page_torrents = get_page_torrents(index_url,options.workers,total_counts)
-    else:
-        # torrents on the first page
-        page_torrents = get_page_torrents(index_url,options.workers,per_page_torrents)
-
     all_torrents = []
-    all_torrents += page_torrents
+    try: 
+        # base index url
+        index_url = root_url + categories[options.category]
 
-    # floor the number of pages
-    pages = int(total_counts / len(page_torrents))
+        # per page torrents
+        per_page_torrents = len(get_page_torrent_links(index_url))
 
-    for i in range(1, pages):
-        page_torrents= get_page_torrents(index_url + '/' + str(i+1), options.workers, per_page_torrents)
+        # total counts
+        total_counts = options.counts
+        assert (total_counts <= 10000), "Maximum Counts Exceeded! Maximum 10000 links."
+        page_torrents = []
+
+        if total_counts < per_page_torrents:
+            page_torrents = get_page_torrents(index_url,options.workers,total_counts)
+        else:
+            # torrents on the first page
+            page_torrents = get_page_torrents(index_url,options.workers,per_page_torrents)
+
+        
         all_torrents += page_torrents
 
-    # add the remaining torrents
-    page_torrents = get_page_torrents(index_url + '/' + str(pages+1), options.workers, total_counts-len(all_torrents))
-    all_torrents += page_torrents
+        # floor the number of pages
+        pages = int(total_counts / len(page_torrents))
+
+        for i in range(1, pages):
+            page_torrents= get_page_torrents(index_url + '/' + str(i+1), options.workers, per_page_torrents)
+            all_torrents += page_torrents
+
+        # add the remaining torrents
+        page_torrents = get_page_torrents(index_url + '/' + str(pages+1), options.workers, total_counts-len(all_torrents))
+        all_torrents += page_torrents
+
+    except UnicodeEncodeError:
+        print 'UnicodeEncodeError. Prepare to dump current data.'
+
+    except requests.exceptions.TooManyRedirects:
+        print 'Too many redirects. Prepare to dump current data.'
+        
+    # except requests.exceptions.ConnectionError:
+    #     print 'ConnectionError. Prepare to dump current data.'
+        
+
+    print all_torrents
 
     if options.csvfile:
         write_torrents_to_file(all_torrents) # csv data output to file
@@ -126,6 +146,8 @@ def page_torrents_traverser(options):
         write_torrents_to_file(all_torrents, True) # write magnet links to file
 
     return all_torrents
+    
+
 
 def page_magnet_traverser(category,total_counts):
     """ get total_counts number of magnet links on kat.cr
@@ -154,6 +176,22 @@ def page_magnet_traverser(category,total_counts):
 
     return all_magnets
 
+def write_torrent_to_file(torrent, onlyMagnet = False, allData = True):
+    """ write a torrent to file
+    """
+    delim = '\n'
+    csvdelim = ',' + delim
+
+    if onlyMagnet:
+        f = open('magnet_links.txt','w')
+        f.write(torrent.magnet + delim) 
+        f.close() 
+
+    if allData:
+        f = open('torrents.csv','w')
+        f.write(str(torrent) + csvdelim) 
+        f.close()
+
 def write_torrents_to_file(torrents_list, onlyMagnet = False, allData = True):
     """ write the list to a file, if csv, add comma before line change
     """
@@ -161,13 +199,13 @@ def write_torrents_to_file(torrents_list, onlyMagnet = False, allData = True):
     csvdelim = ',' + delim
 
     if onlyMagnet:
-        f = open('top_{}_magnet_links.txt'.format(len(torrents_list)),'w')
+        f = open('magnet_links.txt','w')
         for torrent in torrents_list:
             f.write(torrent.magnet + delim) 
         f.close() 
 
     if allData:
-        f = open('top_{}_torrents.csv'.format(len(torrents_list)),'w')
+        f = open('torrents.csv','w')
         for torrent in torrents_list:
             f.write(str(torrent) + csvdelim) 
         f.close()
@@ -190,9 +228,8 @@ if __name__ == '__main__':
     
     # start = timeit.default_timer()
 
-    # page_torrents_traverser(command_line.parse_args())
-    tl = get_page_torrents('https://kat.cr/movies/6/', 8, 25)
-
+    page_torrents_traverser(command_line.parse_args())
+    
     # stop = timeit.default_timer()
 
     # print stop - start  
