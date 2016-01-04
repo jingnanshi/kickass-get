@@ -137,8 +137,6 @@ def page_torrents_traverser(options):
     #     print 'ConnectionError. Prepare to dump current data.'
         
 
-    print all_torrents
-
     if options.csvfile:
         write_torrents_to_file(all_torrents) # csv data output to file
 
