@@ -47,7 +47,7 @@ def get_page_torrents(page_url, workers, numbers):
 
     while len(page_links) > numbers:
         page_links.pop()
-
+    assert (len(page_links) != 0), 'Number of torrent pages equals to 0!'
     torrents = pool.map(get_torrent_info, page_links)
     # pool.close()
     # pool.join()
@@ -113,7 +113,6 @@ def page_torrents_traverser(options):
             # torrents on the first page
             page_torrents = get_page_torrents(index_url,options.workers,per_page_torrents)
 
-        
         all_torrents += page_torrents
 
         # floor the number of pages
@@ -124,8 +123,9 @@ def page_torrents_traverser(options):
             all_torrents += page_torrents
 
         # add the remaining torrents
-        page_torrents = get_page_torrents(index_url + '/' + str(pages+1), options.workers, total_counts-len(all_torrents))
-        all_torrents += page_torrents
+        if (total_counts-len(all_torrents)) != 0:
+            page_torrents = get_page_torrents(index_url + '/' + str(pages+1), options.workers, total_counts-len(all_torrents))
+            all_torrents += page_torrents
 
     except UnicodeEncodeError:
         print 'UnicodeEncodeError. Prepare to dump current data.'
