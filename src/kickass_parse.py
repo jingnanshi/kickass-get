@@ -97,6 +97,8 @@ def page_torrents_traverser(options):
     all_torrents = []
     try: 
         # base index url
+        # change this to enable scrapping of torrents in searched results
+        # eg: index_url = 'https://kat.cr/usearch/revenant/'
         index_url = root_url + categories[options.category]
 
         # per page torrents
@@ -145,7 +147,6 @@ def page_torrents_traverser(options):
 
     return all_torrents
     
-
 
 def page_magnet_traverser(category,total_counts):
     """ get total_counts number of magnet links on kat.cr
