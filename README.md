@@ -35,5 +35,3 @@ You can change the `index_url` in `page_torrents_traverser(options)` to enable s
 
 # Disclaimer
 See the [license](license.md).
-
-By Jingnan Shi, Harvey Mudd College
