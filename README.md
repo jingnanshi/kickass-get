@@ -1,4 +1,4 @@
-# Kickass Scrapper
+# Kickass Scraper
 
 A scrapper for Kickass torrents (kat.cr). Provides command-line tools to scrap top torrents in given categories. Users can then store data in file for mass-download.
 
