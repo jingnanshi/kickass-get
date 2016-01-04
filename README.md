@@ -31,7 +31,7 @@ Optional Arguments  | Description
 
 
 # Advanced Usage
-You can change the `index_url` in `page_torrents_traverser(options)` to enable scrapping torrents in searched results. For example, if you want to scrap torrent info with a search keyword 'test', you can use `index_url = 'https://kat.cr/usearch/test/`.
+You can change the `index_url` in `page_torrents_traverser(options)` to enable scrapping torrents in searched results. For example, if you want to scrap torrent info with a search keyword 'test', you can use `index_url = 'https://kat.cr/usearch/test/'`.
 
 # Disclaimer
 See the [license](license.md).
