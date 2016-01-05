@@ -40,4 +40,6 @@ Command-line usage::
 
 Disclaimer
 ==========
-See the license.
+See the `license`_.
+
+.. _license: LICENSE.md
