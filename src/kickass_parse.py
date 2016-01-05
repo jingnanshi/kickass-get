@@ -10,6 +10,7 @@ import command_line
 import string
 import timeit
 import termcolor
+import os.path
 from torrent import Torrent
 from bcolors import bcolors
 from multiprocessing.pool import ThreadPool as Pool
@@ -155,12 +156,34 @@ def page_torrents_traverser(options):
         
     # except requests.exceptions.ConnectionError:
     #     print 'ConnectionError. Prepare to dump current data.'
-        
-    if options.csvfile:
-        write_torrents_to_file(all_torrents) # csv data output to file
+    if options.csvfile or options.magnet2file:
+        while True:
+            usr_input = raw_input("Enter the path to store file to (q to quit): ").strip()
+            if os.path.exists(usr_input):
+                break;
+            elif usr_input == 'q':
+                break;
+            else:
+                print termcolor.colored('Path does not exist. \n', 'red')
 
-    if options.magnet2file:
-        write_torrents_to_file(all_torrents, True) # write magnet links to file
+        if options.csvfile:
+            write_torrents_to_file(all_torrents, usr_input) # csv data output to file
+
+        if options.magnet2file:
+            write_torrents_to_file(all_torrents, usr_input, True) # write magnet links to file
+    else: # print torrents to screen
+        print termcolor.colored('Torrents displayed: {}'.format(len(all_torrents)).center(50, '='), 'red', attrs=['bold'])
+
+        for i in range(len(all_torrents)):
+            print termcolor.colored('Torrent {}: \n'.format(i), 'red', attrs=['blink'])
+            print str(all_torrents[i]) + '\n'
+
+        # asking for which one to display
+        index = command_line.readInt("Which torrent's magnet link would you like to display? (q to quit) ", 'q', 0, len(all_torrents))
+
+        print 'Magnet link: \n'
+        print all_torrents[int(index)].getMagnet() + '\n \n'
+        print termcolor.colored('Enjoy the ride!', 'magenta', attrs=['blink'])
 
     return all_torrents
     
@@ -192,36 +215,42 @@ def page_magnet_traverser(category,total_counts):
 
     return all_magnets
 
-def write_torrent_to_file(torrent, onlyMagnet = False, allData = True):
+def write_torrent_to_file(torrent, save_path, onlyMagnet = False, allData = True):
     """ write a torrent to file
     """
     delim = '\n'
     csvdelim = ',' + delim
 
+    file_path_m = os.path.join(save_path,'magnet_links.txt')
+    file_path_t = os.path.join(save_path,'torrents.csv')
+
     if onlyMagnet:
-        f = open('magnet_links.txt','w')
+        f = open(file_path_m,'w')
         f.write(torrent.magnet + delim) 
         f.close() 
 
     if allData:
-        f = open('torrents.csv','w')
+        f = open(file_path_t,'w')
         f.write(str(torrent) + csvdelim) 
         f.close()
 
-def write_torrents_to_file(torrents_list, onlyMagnet = False, allData = True):
+def write_torrents_to_file(torrents_list, save_path, onlyMagnet = False, allData = True):
     """ write the list to a file, if csv, add comma before line change
     """
     delim = '\n'
     csvdelim = ',' + delim
 
+    file_path_m = os.path.join(save_path,'magnet_links.txt')
+    file_path_t = os.path.join(save_path,'torrents.csv')
+
     if onlyMagnet:
-        f = open('magnet_links.txt','w')
+        f = open(file_path_m,'w')
         for torrent in torrents_list:
             f.write(torrent.magnet + delim) 
         f.close() 
 
     if allData:
-        f = open('torrents.csv','w')
+        f = open(file_path_t,'w')
         for torrent in torrents_list:
             f.write(str(torrent) + csvdelim) 
         f.close()

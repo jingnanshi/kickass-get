@@ -30,3 +30,28 @@ def check_args(options):
 
     if (options.category == 'all' and options.keyword == None):
         raise AssertionError('"all" category only works when using --search')
+
+def readInt(prompt, sig, min_v, max_v):
+    """ make sure user input integer, sig to break, range from min to max
+        min inclusive
+        max exclusive
+    """
+    while True:
+        usr_input = raw_input(prompt)
+        if usr_input == sig:
+            break
+        elif not isInt(usr_input):
+            print 'Not a valid integer!'
+        elif int(usr_input) < min_v or int(usr_input) >= max_v:
+            print 'Number out of range!'
+        else:
+            return usr_input
+
+    return None
+
+def isInt(s):
+    try: 
+        int(s)
+        return True
+    except ValueError:
+        return False

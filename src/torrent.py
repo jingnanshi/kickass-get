@@ -27,6 +27,9 @@ class Torrent:
 	def setMagnet(self,magnet):
 		self.magnet = magnet
 
+	def getMagnet(self):
+		return self.magnet
+
 	def setTorrentCache(self,torrent_cache):
 		self.torrent_cache = torrent_cache 
 
