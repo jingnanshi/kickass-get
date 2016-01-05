@@ -1,8 +1,8 @@
 # Kickass Scraper
 
-A scrapper for Kickass torrents (kat.cr). Provides command-line tools to scrap top torrents in given categories. Users can then store data in file for mass-download.
+A scrapper for Kickass torrents (kat.cr). Provides command-line tools to scrap top torrents in given categories. Users can then store data in file for mass-download, or choose one magnet link to show on terminal.
 
-Users can choose to export all data related to torrents in a csv file or only export magnet links.
+Users can choose to export all data related to torrents in a csv file or only export magnet links. 
 
 # Features
 * All Kat.cr categories supported: movies, books, music, anime, games, tv, new, apps, xxx and other. 
@@ -33,13 +33,14 @@ optional arguments:
 ```
 
 # Example
-Suppose you want to search for torrents of the newest movie called 'Exploding Suns'. You want to look at the top 5 torrents, and only want one magnet link. The complete commands are therefore `python -i kickass_parse.py --search exploding-suns --category movies --counts 5`. The terminal will then show the 5 top torrents info. You can then enter the index of the torrent you want, and its magnet link will show on the screen. Similar to the screenshot below.
+Suppose you want to search for torrents of the newest movie called 'Exploding Suns'. You want to look at the top 5 torrents, and only want one magnet link. The complete commands are therefore `python -i kickass_parse.py --search exploding-suns --category movies --counts 5`. 
+
+![interaction_1](/screenshots/interaction_1.png)
+
+The terminal will then show the 5 top torrents info. You can then enter the index of the torrent you want, and its magnet link will show on the screen. Similar to the screenshot below.
 
 ![interaction_2](/screenshots/interaction_2.png)
 
-# Screenshots
-![movies](/screenshots/movies.png)
-![interaction_1](/screenshots/interaction_1.png)
 
 # Disclaimer
 See the [license](license.md).
