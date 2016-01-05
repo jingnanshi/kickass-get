@@ -1,17 +1,21 @@
-# Kickass Scraper
+Kickass Scraper
+===============
 
 A scrapper for Kickass torrents (kat.cr). Provides command-line tools to scrap top torrents in given categories. Users can then store data in file for mass-download.
 
 Users can choose to export all data related to torrents in a csv file or only export magnet links.
 
-# Features
-* All Kat.cr categories supported: movies, books, music, anime, games, tv, new, apps, xxx and other. 
-* Export data to csv file option
-* Export magnet links to txt file option
-* Parallel Processing enabled (default 8 workers, you can change this number according to your CPU cores)
+Features:
+
+- All Kat.cr categories supported: movies, books, music, anime, games, tv, new, apps, xxx and other. 
+- Export data to csv file option
+- Export magnet links to txt file option
+- Parallel Processing enabled (default 8 workers, you can change this number according to your CPU cores)
 
 
-# Usage
+Usage
+=====
+
 ```
 usage: kickass_parse.py [-h] [--category FIELD] [--workers WORKERS]
                         [--magnet2file] [--csvfile] [--counts COUNTS]
@@ -26,12 +30,6 @@ Optional Arguments  | Description
  --counts COUNTS    | number of top torrent links to scrap, default 25.
 ```
 
-# Screenshots
-![movies](/screenshots/movies.png)
-
-
-# Advanced Usage
-You can change the `index_url` in `page_torrents_traverser(options)` to enable scrapping torrents in searched results. For example, if you want to scrap torrent info with a search keyword 'test', you can use `index_url = 'https://kat.cr/usearch/test/'`.
-
-# Disclaimer
-See the [license](license.md).
+Disclaimer
+==========
+See the license.
