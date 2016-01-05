@@ -1,8 +1,6 @@
-# Kickass Scraper
+# kickass-get
 
-A scrapper for Kickass torrents (kat.cr). Provides command-line tools to scrap top torrents in given categories. Users can then store data in file for mass-download, or choose one magnet link to show on terminal.
-
-Users can choose to export all data related to torrents in a csv file or only export magnet links. 
+A command-line interface for scraping Kickass torrents (kat.cr). Provides command-line tools to scrap top torrents in given categories, or obtaining specific torrents. Users can then store data in file for mass-download, or choose one magnet link to show on terminal. 
 
 # Features
 * All Kat.cr categories supported: movies, books, music, anime, games, tv, new, apps, xxx and other. 
