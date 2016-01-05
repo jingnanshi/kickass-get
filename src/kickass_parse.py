@@ -9,6 +9,7 @@ import argparse
 import command_line
 import string
 import timeit
+import termcolor
 from torrent import Torrent
 from bcolors import bcolors
 from multiprocessing.pool import ThreadPool as Pool
@@ -20,6 +21,10 @@ categories = {'movies' : '/movies', 'new': '/new', 'music': '/music', 'books': '
 
 # session = requests.session()
 # session.max_redirects = 100
+
+# process ANSI color for windows terminal
+import colorama
+colorama.init()
 
 def get_page_magnet_urls(page_url):
     """ get the magnet links on a single page of kat.cr
@@ -83,23 +88,36 @@ def get_torrent_info(page_url):
                             update_time = c_update_time, upload_time = c_upload_time)
 
         # filter function to remove non-ascii characters from showing up in terminal
-        print bcolors.OKGREEN + 'Processing torrent info at {} succeeded.'.format(filter(lambda x: x in string.printable, page_url))+ bcolors.ENDC
+        print termcolor.colored('Processing torrent info at {} succeeded.'.format(filter(lambda x: x in string.printable, page_url)), 'green')
         return torrent
 
     except IndexError:
-        print bcolors.FAIL + 'Torrent at {} deleted!'.format(page_url)+ bcolors.ENDC
+        # torrent page has been deleted
+        print termcolor.colored('Torrent at {} deleted!'.format(page_url), 'red')
         return Torrent(title = 'Deleted!')
 
 def page_torrents_traverser(options):
     """ get total_counts number of torrents (in Torrent objects) on kat.cr
         maximum: 10000
     """
+    # check whether arguments are valid
+    command_line.check_args(options)
+
     all_torrents = []
+
+    # enable custom searching
+    if options.keyword != None:
+        index_url = root_url + '/usearch' + '/{}'.format(options.keyword)
+        if options.category != 'all':
+            index_url += ' category:{}'.format(options.category)
+    else:
+        index_url = root_url + categories[options.category]
+
     try: 
         # base index url
         # change this to enable scrapping of torrents in searched results
         # eg: index_url = 'https://kat.cr/usearch/revenant/'
-        index_url = root_url + categories[options.category]
+        # index_url = root_url + categories[options.category]
 
         # per page torrents
         per_page_torrents = len(get_page_torrent_links(index_url))
@@ -138,7 +156,6 @@ def page_torrents_traverser(options):
     # except requests.exceptions.ConnectionError:
     #     print 'ConnectionError. Prepare to dump current data.'
         
-
     if options.csvfile:
         write_torrents_to_file(all_torrents) # csv data output to file
 
@@ -226,7 +243,7 @@ def write_to_file(url_list, csv = False):
 if __name__ == '__main__':
     
     # start = timeit.default_timer()
-
+    
     page_torrents_traverser(command_line.parse_args())
     
     # stop = timeit.default_timer()
