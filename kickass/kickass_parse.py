@@ -8,7 +8,7 @@ import bs4
 import argparse
 import command_line
 import string
-import timeit
+# import timeit
 import termcolor
 import os.path
 from torrent import Torrent
@@ -269,11 +269,14 @@ def write_to_file(url_list, csv = False):
 
     f.close() 
 
+def main():
+    page_torrents_traverser(command_line.parse_args())
+
 if __name__ == '__main__':
     
     # start = timeit.default_timer()
     
-    page_torrents_traverser(command_line.parse_args())
+    main()
     
     # stop = timeit.default_timer()
 
