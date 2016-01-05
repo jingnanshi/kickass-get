@@ -40,6 +40,4 @@ Command-line usage::
 
 Disclaimer
 ==========
-See the `license`_.
-
-.. _license: LICENSE.md
+MIT License

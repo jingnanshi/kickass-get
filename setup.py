@@ -12,7 +12,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='kickass-get',
-    version='0.1.0',
+    version='0.1.1',
     description='A command-line interface for kat.cr (Kickass Torrents)',
     long_description=long_description,
     url='https://github.com/jingnanshi/kickass-get',
@@ -30,12 +30,12 @@ setup(
     ],
     keywords=['torrent', 'magnet', 'download', 'kickass', 'kat', 'client'],
     packages=find_packages(exclude=['tests']),
-    install_requires=['colorama', 'termcolor', 'multiprocessing', 'bs4', 'requests', 'argparse'],
+    install_requires=['colorama', 'termcolor', 'multiprocessing', 'beautifulsoup4', 'requests', 'argparse'],
 
     entry_points={
         'console_scripts': [
             'kickass-get=kickass.kickass_parse:main',
         ],
-    },
-    test_suite='tests',
+    }
+    # test_suite='tests'
 )
