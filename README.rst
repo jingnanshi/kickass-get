@@ -16,10 +16,11 @@ Features:
 Usage
 =====
 
-```
+::
 usage: kickass_parse.py [-h] [--category FIELD] [--workers WORKERS]
                         [--magnet2file] [--csvfile] [--counts COUNTS]
 
+::
 Optional Arguments  | Description
 --------------------|---------------------------------------------------
  -h, --help         | show this help message and exit
@@ -28,7 +29,7 @@ Optional Arguments  | Description
  --magnet2file      | export the magnet links in file
  --csvfile          | export the data in csv file
  --counts COUNTS    | number of top torrent links to scrap, default 25.
-```
+
 
 Disclaimer
 ==========
