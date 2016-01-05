@@ -12,7 +12,6 @@ import string
 import termcolor
 import os.path
 from torrent import Torrent
-from bcolors import bcolors
 from multiprocessing.pool import ThreadPool as Pool
 
 root_url = 'http://kat.cr'
