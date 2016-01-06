@@ -1,5 +1,14 @@
 kickass-get
 ===============
+.. image:: https://img.shields.io/pypi/v/kickass-get.svg
+    :target: https://img.shields.io/pypi/v/kickass-get
+    
+.. image:: https://img.shields.io/pypi/l/kickass-get.svg
+    :target: https://img.shields.io/pypi/l/kickass-get
+    
+.. image:: https://img.shields.io/pypi/dm/kickass-get.svg
+    :target: https://img.shields.io/pypi/dm/kickass-get
+    
 
 A command-line interface for scraping Kickass torrents (kat.cr). Provides command-line tools to scrap top torrents in given categories, or obtaining specific torrents. Users can then store data in file for mass-download, or choose one magnet link to show on terminal.
 
