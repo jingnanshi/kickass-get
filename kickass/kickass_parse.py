@@ -12,6 +12,7 @@ import timeit
 import termcolor
 import os.path
 from torrent import Torrent
+import printer
 
 from multiprocessing.pool import ThreadPool as Pool
 
@@ -203,9 +204,11 @@ def page_torrents_traverser(options):
     else: # print torrents to screen
         print termcolor.colored('Torrents displayed: {}'.format(len(all_torrents)).center(50, '='), 'red', attrs=['bold'])
 
-        for i in range(len(all_torrents)):
-            print termcolor.colored('Torrent {}: \n'.format(i), 'red', attrs=['blink'])
-            print str(all_torrents[i]) + '\n'
+        # for i in range(len(all_torrents)):
+        #     print termcolor.colored('Torrent {}: \n'.format(i), 'red', attrs=['blink'])
+        #     print str(all_torrents[i]) + '\n'
+        printer.print_torrents(all_torrents)
+        
 
         index = command_line.readInt("Choose a torrent using its index (q to quit): ", 'q', 0, len(all_torrents))
 
@@ -331,7 +334,6 @@ def check_connection(url):
         return resp.status_code
     except requests.exceptions.ConnectionError:
         return 0
-
 
 def main():
     page_torrents_traverser(command_line.parse_args())

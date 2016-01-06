@@ -95,3 +95,10 @@ class Torrent:
         file1.write(torrent_string)
         file1.close()
 
+    def list_repr(self):
+        """ return a list representation of the torrent itself:
+            [title, size, seeders, leechers, update_time, upload_time]
+        """
+        tor_list = [self.getCleanedTitle(), self.size, self.seeders, self.leechers, self.update_time, self.upload_time]
+        return tor_list
+
