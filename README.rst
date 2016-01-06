@@ -12,6 +12,11 @@ Features:
 - Export magnet links to txt file option
 - Parallel Processing enabled (default 8 workers, you can change this number according to your CPU cores)
 
+Installation:
+-------------
+
+Use ``pip install kickass-get``
+
 
 Usage
 =====
