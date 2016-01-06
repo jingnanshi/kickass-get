@@ -18,6 +18,8 @@ def parse_args():
                         help='number of top torrent links to scrap, default 25.')
     parser.add_argument('--search', action='store', dest='keyword', default = None, type = str,
                         help='Search a keyword, replace space with hyphen. Does not work with "other" category.')
+    parser.add_argument('--torrents', action='store_true', default=False,
+                        help='export the torrents files')
     parser.add_argument('--workers', type=int, default=8,
                         help='number of workers to use, 8 by default.')
     return parser.parse_args()
@@ -45,7 +47,7 @@ def readInt(prompt, sig, min_v, max_v):
         elif int(usr_input) < min_v or int(usr_input) >= max_v:
             print 'Number out of range!'
         else:
-            return usr_input
+            return int(usr_input)
 
     return None
 

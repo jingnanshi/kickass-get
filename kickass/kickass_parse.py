@@ -12,9 +12,10 @@ import timeit
 import termcolor
 import os.path
 from torrent import Torrent
+
 from multiprocessing.pool import ThreadPool as Pool
 
-root_url = 'http://kat.cr'
+root_url = 'https://kickass.unblocked.pe'
 
 categories = {'movies' : '/movies', 'new': '/new', 'music': '/music', 'books': '/books', 'xxx':'/xxx',
                 'anime':'/anime', 'tv': '/tv', 'games':'/games', 'apps':'/applications', 'other':'/other' }
@@ -178,21 +179,27 @@ def page_torrents_traverser(options):
         
     # except requests.exceptions.ConnectionError:
     #     print 'ConnectionError. Prepare to dump current data.'
-    if options.csvfile or options.magnet2file:
+    if options.csvfile or options.magnet2file or options.torrents:
         while True:
-            usr_input = raw_input("Enter the path to store file to (q to quit): ").strip()
+            usr_input = raw_input("Enter the path to store file(s) to (q to quit): ").strip()
             if os.path.exists(usr_input):
-                break;
+
+                if options.csvfile:
+                    write_torrents_to_file(all_torrents, usr_input) # csv data output to file
+
+                if options.magnet2file:
+                    write_torrents_to_file(all_torrents, usr_input, True) # write magnet links to file
+
+                if options.torrents:
+                    for torrent in all_torrents:
+                        torrent.save_to_file(usr_input)
+                    break;
+
             elif usr_input == 'q':
                 break;
             else:
                 print termcolor.colored('Path does not exist. \n', 'red')
 
-        if options.csvfile:
-            write_torrents_to_file(all_torrents, usr_input) # csv data output to file
-
-        if options.magnet2file:
-            write_torrents_to_file(all_torrents, usr_input, True) # write magnet links to file
     else: # print torrents to screen
         print termcolor.colored('Torrents displayed: {}'.format(len(all_torrents)).center(50, '='), 'red', attrs=['bold'])
 
@@ -200,12 +207,36 @@ def page_torrents_traverser(options):
             print termcolor.colored('Torrent {}: \n'.format(i), 'red', attrs=['blink'])
             print str(all_torrents[i]) + '\n'
 
-        # asking for which one to display
-        index = command_line.readInt("Which torrent's magnet link would you like to display? (q to quit) ", 'q', 0, len(all_torrents))
-        if (index != None):
-            print 'Magnet link: \n'
-            print all_torrents[int(index)].getMagnet() + '\n \n'
-            print termcolor.colored('Enjoy the ride!', 'magenta', attrs=['blink'])
+        index = command_line.readInt("Choose a torrent using its index (q to quit): ", 'q', 0, len(all_torrents))
+
+        # choose magnet or torrent
+        while index != None:
+            usr_input = raw_input("Choose magnet and/or torrent file (magnet, torrent, both; q to quit): ").strip()
+            if (usr_input == 'q'):
+                break
+            if (usr_input == 'magnet') or (usr_input == 'both'):
+                print 'Magnet link: \n'
+                print all_torrents[index].getMagnet() + '\n \n'
+                print termcolor.colored('Enjoy the ride!', 'magenta', attrs=['blink'])
+
+                if (usr_input == 'both'):
+                    usr_input = 'torrent'
+                if (usr_input == 'magnet'):
+                    break
+
+            if (usr_input == 'torrent'):
+                while True:
+                    usr_input = raw_input("Enter the path to store file to (q to quit): ").strip()
+
+                    if os.path.exists(usr_input):
+                        all_torrents[index].save_to_file(usr_input)
+                        break
+                        
+                    elif usr_input == 'q':
+                        break
+                    else:
+                        print termcolor.colored('Path does not exist. \n', 'red')
+
 
     return all_torrents
     
@@ -300,6 +331,7 @@ def check_connection(url):
         return resp.status_code
     except requests.exceptions.ConnectionError:
         return 0
+
 
 def main():
     page_torrents_traverser(command_line.parse_args())
