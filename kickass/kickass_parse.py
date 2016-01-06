@@ -37,18 +37,21 @@ def get_page_magnet_urls(page_url):
 def get_page_torrent_links(page_url):
     """ get links to each individual torrent page links on kat.cr page
     """
+    print 'Retriving page at {}.'.format(page_url)
     response = requests.get(page_url)
     # response = session.get(page_url)
+    print 'Page retrived.'
 
     soup = bs4.BeautifulSoup(response.text,"html.parser")
     page_links = [root_url + a.attrs.get('href') for a in soup.select('a.cellMainLink')]
     return page_links
 
-def get_page_torrents(page_url, workers, numbers):
-    """ return a list containing Torrent objects
+def get_page_torrents(page_links, workers, numbers):
+    """ given a list of links containing individual
+        torrent info pages,
+        return a list containing Torrent objects
     """
     pool = Pool(processes=workers)
-    page_links = get_page_torrent_links(page_url)
 
     while len(page_links) > numbers:
         page_links.pop()
@@ -105,6 +108,13 @@ def page_torrents_traverser(options):
 
     all_torrents = []
 
+    print 'Connecting ...'
+    status_code = check_connection(root_url)
+    if status_code != 0 or status_code != 404:
+        print 'Connection success!'
+    else:
+        raise requests.exceptions.ConnectionError('Connection failed, code {}. Try a proxy.'.format(str(status_code)))
+
     # enable custom searching
     if options.keyword != None:
         index_url = root_url + '/usearch' + '/{}'.format(options.keyword)
@@ -119,8 +129,9 @@ def page_torrents_traverser(options):
         # eg: index_url = 'https://kat.cr/usearch/revenant/'
         # index_url = root_url + categories[options.category]
 
+        page_links = get_page_torrent_links(index_url)
         # per page torrents
-        per_page_torrents = len(get_page_torrent_links(index_url))
+        per_page_torrents = len(page_links)
 
         # total counts
         total_counts = options.counts
@@ -128,10 +139,10 @@ def page_torrents_traverser(options):
         page_torrents = []
 
         if total_counts < per_page_torrents:
-            page_torrents = get_page_torrents(index_url,options.workers,total_counts)
+            page_torrents = get_page_torrents(page_links,options.workers,total_counts)
         else:
             # torrents on the first page
-            page_torrents = get_page_torrents(index_url,options.workers,per_page_torrents)
+            page_torrents = get_page_torrents(page_links,options.workers,per_page_torrents)
 
         all_torrents += page_torrents
 
@@ -139,12 +150,14 @@ def page_torrents_traverser(options):
         pages = int(total_counts / len(page_torrents))
 
         for i in range(1, pages):
-            page_torrents= get_page_torrents(index_url + '/' + str(i+1), options.workers, per_page_torrents)
+            page_links = get_page_torrent_links(index_url + '/' + str(i+1))
+            page_torrents= get_page_torrents(page_links, options.workers, per_page_torrents)
             all_torrents += page_torrents
 
         # add the remaining torrents
         if (total_counts-len(all_torrents)) != 0:
-            page_torrents = get_page_torrents(index_url + '/' + str(pages+1), options.workers, total_counts-len(all_torrents))
+            page_links = get_page_torrent_links(index_url + '/' + str(pages+1))
+            page_torrents = get_page_torrents(page_links, options.workers, total_counts-len(all_torrents))
             all_torrents += page_torrents
 
     except UnicodeEncodeError:
@@ -179,10 +192,10 @@ def page_torrents_traverser(options):
 
         # asking for which one to display
         index = command_line.readInt("Which torrent's magnet link would you like to display? (q to quit) ", 'q', 0, len(all_torrents))
-
-        print 'Magnet link: \n'
-        print all_torrents[int(index)].getMagnet() + '\n \n'
-        print termcolor.colored('Enjoy the ride!', 'magenta', attrs=['blink'])
+        if (index != None):
+            print 'Magnet link: \n'
+            print all_torrents[int(index)].getMagnet() + '\n \n'
+            print termcolor.colored('Enjoy the ride!', 'magenta', attrs=['blink'])
 
     return all_torrents
     
@@ -267,6 +280,16 @@ def write_to_file(url_list, csv = False):
         f.write(link + delim) 
 
     f.close() 
+
+def check_connection(url):
+    """ check connection to the provided url, 
+        return status code
+    """
+    try:
+        resp = requests.head('http://kat.cr')
+        return resp.status_code
+    except requests.exceptions.ConnectionError:
+        return 0
 
 def main():
     page_torrents_traverser(command_line.parse_args())
