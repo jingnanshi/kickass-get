@@ -8,7 +8,7 @@ import bs4
 import argparse
 import command_line
 import string
-# import timeit
+import timeit
 import termcolor
 import os.path
 from torrent import Torrent
@@ -56,9 +56,13 @@ def get_page_torrents(page_links, workers, numbers):
     while len(page_links) > numbers:
         page_links.pop()
     assert (len(page_links) != 0), 'Number of torrent pages equals to 0!'
+    
     torrents = pool.map(get_torrent_info, page_links)
-    # pool.close()
-    # pool.join()
+    #torrents = map(get_torrent_info, page_links)
+    #torrents = [pool.apply(get_torrent_info, args=(x,)) for x in page_links]
+    
+    pool.close()
+    pool.join()
     return torrents
 
 def get_torrent_info(page_url):
@@ -128,7 +132,9 @@ def page_torrents_traverser(options):
         # change this to enable scrapping of torrents in searched results
         # eg: index_url = 'https://kat.cr/usearch/revenant/'
         # index_url = root_url + categories[options.category]
-
+        
+        start = timeit.default_timer()
+        
         page_links = get_page_torrent_links(index_url)
         # per page torrents
         per_page_torrents = len(page_links)
@@ -159,6 +165,10 @@ def page_torrents_traverser(options):
             page_links = get_page_torrent_links(index_url + '/' + str(pages+1))
             page_torrents = get_page_torrents(page_links, options.workers, total_counts-len(all_torrents))
             all_torrents += page_torrents
+            
+        stop = timeit.default_timer()
+        
+        print 'Time taken: ', stop-start
 
     except UnicodeEncodeError:
         print 'UnicodeEncodeError. Prepare to dump current data.'
@@ -286,7 +296,7 @@ def check_connection(url):
         return status code
     """
     try:
-        resp = requests.head('http://kat.cr')
+        resp = requests.head(url)
         return resp.status_code
     except requests.exceptions.ConnectionError:
         return 0
