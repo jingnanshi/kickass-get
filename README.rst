@@ -54,4 +54,9 @@ Command-line usage::
 
 Disclaimer
 ==========
-MIT License
+The author explicitly does not approve the use of the software for illegal 
+activities. The illegal use of this software can result in serious legal 
+consequences for those who engage in it.
+
+See the license for more information.
+
