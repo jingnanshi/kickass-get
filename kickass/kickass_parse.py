@@ -203,11 +203,10 @@ def page_torrents_traverser(options):
                 if options.torrents:
                     pool = Pool(processes=options.workers)
 
-                    
                     # for torrent in all_torrents:
                     #     torrent.save_to_file(usr_input)
-                    # def save_torrent(torrent):
-                    #     torrent.save_to_file(usr_input)
+                    # 
+                    # multiprocessing save torrents to files
 
                     pool.map(lambda x: x.save_to_file(usr_input), all_torrents)
 
