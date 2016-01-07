@@ -201,8 +201,18 @@ def page_torrents_traverser(options):
                     write_torrents_to_file(all_torrents, usr_input, True) # write magnet links to file
 
                 if options.torrents:
-                    for torrent in all_torrents:
-                        torrent.save_to_file(usr_input)
+                    pool = Pool(processes=options.workers)
+
+                    
+                    # for torrent in all_torrents:
+                    #     torrent.save_to_file(usr_input)
+                    # def save_torrent(torrent):
+                    #     torrent.save_to_file(usr_input)
+
+                    pool.map(lambda x: x.save_to_file(usr_input), all_torrents)
+
+                    pool.close()
+                    pool.join()
                     break;
 
             elif usr_input == 'q':
@@ -333,6 +343,9 @@ def write_to_file(url_list, csv = False):
         f.write(link + delim) 
 
     f.close() 
+
+def save_torrent(torrent, save_path):
+    torrent.save_to_file(save_path)
 
 def main():
     page_torrents_traverser(command_line.parse_args())

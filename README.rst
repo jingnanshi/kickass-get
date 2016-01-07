@@ -19,6 +19,7 @@ Features:
 - Search keyword supported
 - Export data to csv file option
 - Export magnet links to txt file option
+- Export torrent files supported
 - Parallel Processing enabled (default 8 workers, you can change this number according to your CPU cores)
 
 Installation:
