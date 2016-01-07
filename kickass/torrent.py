@@ -97,6 +97,6 @@ class Torrent:
         """ return a list representation of the torrent itself:
             [title, size, seeders, leechers, update_time, upload_time]
         """
-        tor_list = [self.getCleanedTitle(), self.size, self.seeders, self.leechers, self.update_time, self.upload_time]
+        tor_list = [self.getCleanedTitle(), self.size, self.seeders, self.leechers, self.upload_time]
         return tor_list
 

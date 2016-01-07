@@ -30,7 +30,7 @@ setup(
     ],
     keywords=['torrent', 'magnet', 'download', 'kickass', 'kat', 'client'],
     packages=find_packages(exclude=['tests']),
-    install_requires=['colorama', 'termcolor', 'multiprocessing', 'beautifulsoup4', 'requests', 'argparse'],
+    install_requires=['colorama', 'termcolor', 'multiprocessing', 'beautifulsoup4', 'requests', 'argparse', 'tabulate'],
 
     entry_points={
         'console_scripts': [

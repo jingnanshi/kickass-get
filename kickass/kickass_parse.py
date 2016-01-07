@@ -19,7 +19,6 @@ import network
 
 from multiprocessing.pool import ThreadPool as Pool
 
-root_url = network.choose_mirror(data.mirrors)
 
 categories = {'movies' : '/movies', 'new': '/new', 'music': '/music', 'books': '/books', 'xxx':'/xxx',
                 'anime':'/anime', 'tv': '/tv', 'games':'/games', 'apps':'/applications', 'other':'/other' }
@@ -39,7 +38,7 @@ def get_page_magnet_urls(page_url):
     soup = bs4.BeautifulSoup(response.text,"html.parser")
     return [a.attrs.get('href') for a in soup.select('div.iaconbox.center.floatright a[href^="magnet:"]')]
 
-def get_page_torrent_links(page_url):
+def get_page_torrent_links(page_url, root_url):
     """ get links to each individual torrent page links on kat.cr page
     """
     print 'Retriving page at {}.'.format(page_url)
@@ -114,6 +113,8 @@ def page_torrents_traverser(options):
     """
     # check whether arguments are valid
     command_line.check_args(options)
+    
+    root_url = network.choose_mirror(data.mirrors)
 
     
     if root_url == None:
@@ -144,7 +145,7 @@ def page_torrents_traverser(options):
         
         start = timeit.default_timer()
         
-        page_links = get_page_torrent_links(index_url)
+        page_links = get_page_torrent_links(index_url, root_url)
         # per page torrents
         per_page_torrents = len(page_links)
 
@@ -187,6 +188,7 @@ def page_torrents_traverser(options):
         
     # except requests.exceptions.ConnectionError:
     #     print 'ConnectionError. Prepare to dump current data.'
+    
     if options.csvfile or options.magnet2file or options.torrents:
         while True:
             usr_input = raw_input("Enter the path to store file(s) to (q to quit): ").strip()
@@ -331,8 +333,6 @@ def write_to_file(url_list, csv = False):
         f.write(link + delim) 
 
     f.close() 
-
-
 
 def main():
     page_torrents_traverser(command_line.parse_args())
