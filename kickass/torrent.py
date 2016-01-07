@@ -3,12 +3,10 @@ import re
 import gzip
 import urllib2
 import os
+import data
 
 from io import BytesIO
 
-
-default_headers = {'User-Agent': 'kickass get'}
-default_timeout = 10
 
 class Torrent:
 
@@ -79,10 +77,10 @@ class Torrent:
         url = self.torrent_cache[:self.torrent_cache.index('?')]
         # http://stackoverflow.com/questions/16895787/torrent-files-downloaded-using-python-urllib2-fail-to-open-in-bittorrent-client
         req = urllib2.Request(url,
-                              headers=default_headers)
+                              headers=data.default_headers)
         req.add_header('Accept-encoding', 'gzip')
 
-        torrent = urllib2.urlopen(req, timeout=default_timeout)
+        torrent = urllib2.urlopen(req, timeout=data.default_timeout)
         if torrent.info().get('Content-Encoding') == 'gzip':
             torrent = gzip.GzipFile(fileobj=BytesIO(torrent.read()))
 

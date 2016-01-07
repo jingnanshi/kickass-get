@@ -13,10 +13,13 @@ import termcolor
 import os.path
 from torrent import Torrent
 import printer
+import data
+import sys
+import network
 
 from multiprocessing.pool import ThreadPool as Pool
 
-root_url = 'https://kickass.unblocked.pe'
+root_url = network.choose_mirror(data.mirrors)
 
 categories = {'movies' : '/movies', 'new': '/new', 'music': '/music', 'books': '/books', 'xxx':'/xxx',
                 'anime':'/anime', 'tv': '/tv', 'games':'/games', 'apps':'/applications', 'other':'/other' }
@@ -112,14 +115,18 @@ def page_torrents_traverser(options):
     # check whether arguments are valid
     command_line.check_args(options)
 
+    
+    if root_url == None:
+        sys.exit("No working mirror. Try another time.")
+
     all_torrents = []
 
-    print 'Connecting ...'
-    status_code = check_connection(root_url)
-    if status_code != 0 or status_code != 404:
-        print 'Connection success!'
-    else:
-        raise requests.exceptions.ConnectionError('Connection failed, code {}. Try a proxy.'.format(str(status_code)))
+    # print 'Connecting ...'
+    # status_code = network.check_connection(root_url)
+    # if status_code != 0 or status_code != 404:
+    #     print 'Connection success!'
+    # else:
+    #     raise requests.exceptions.ConnectionError('Connection failed, code {}. Try a proxy.'.format(str(status_code)))
 
     # enable custom searching
     if options.keyword != None:
@@ -325,15 +332,7 @@ def write_to_file(url_list, csv = False):
 
     f.close() 
 
-def check_connection(url):
-    """ check connection to the provided url, 
-        return status code
-    """
-    try:
-        resp = requests.head(url)
-        return resp.status_code
-    except requests.exceptions.ConnectionError:
-        return 0
+
 
 def main():
     page_torrents_traverser(command_line.parse_args())
