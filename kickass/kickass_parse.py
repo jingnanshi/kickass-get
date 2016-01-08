@@ -16,6 +16,7 @@ import printer
 import data
 import sys
 import network
+import requests_cache
 
 from multiprocessing.pool import ThreadPool as Pool
 
@@ -29,6 +30,8 @@ categories = {'movies' : '/movies', 'new': '/new', 'music': '/music', 'books': '
 # process ANSI color for windows terminal
 import colorama
 colorama.init()
+
+requests_cache.install_cache(cache_name='github_cache', backend='sqlite', expire_after=1800)
 
 def get_page_magnet_urls(page_url):
     """ get the magnet links on a single page of kat.cr
