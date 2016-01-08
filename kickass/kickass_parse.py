@@ -2,10 +2,17 @@
     kar.cr torrenting site scrapper
 
 """
+import sys
+from distutils.version import LooseVersion
+if LooseVersion(sys.version) < LooseVersion("2.7.9"):
+    print("At least python 2.7.9 required. Your version is "+sys.version)
+    sys.exit(1)
+
 
 import requests
 import bs4
 import argparse
+import subprocess
 import command_line
 import string
 import timeit
@@ -134,7 +141,7 @@ def page_torrents_traverser(options):
 
     # enable custom searching
     if options.keyword != None:
-        index_url = root_url + '/usearch' + '/{}'.format(options.keyword)
+        index_url = root_url + '/usearch' + '/{}'.format(' '.join(options.keyword))
         if options.category != 'all':
             index_url += ' category:{}'.format(options.category)
     else:
@@ -191,6 +198,26 @@ def page_torrents_traverser(options):
         
     # except requests.exceptions.ConnectionError:
     #     print 'ConnectionError. Prepare to dump current data.'
+
+    # transmission block
+    if options.transmission:
+        transmission_command = ['transmission-remote']
+        if options.port:
+            transmission_command.append(options.port)
+
+        ret = subprocess.call(transmission_command + ['-l'],
+                              stdout=subprocess.DEVNULL,
+                              stderr=subprocess.DEVNULL)
+        if ret != 0:
+            print('Transmission is not running.')
+            sys.exit(1)
+
+        for torrent in all_torrents:
+            url = torrent.magnet
+            subprocess.call(transmission_command + ['--add', url])
+            
+        subprocess.call(args.transmission_command + ['-l'])
+
     
     if options.csvfile or options.magnet2file or options.torrents:
         while True:
@@ -348,6 +375,7 @@ def write_to_file(url_list, csv = False):
 
 def save_torrent(torrent, save_path):
     torrent.save_to_file(save_path)
+
 
 def main():
     page_torrents_traverser(command_line.parse_args())

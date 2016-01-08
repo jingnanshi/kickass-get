@@ -16,12 +16,17 @@ def parse_args():
                         help='output the data in csv file')
     parser.add_argument('--counts', type=int, default=25,
                         help='number of top torrent links to scrap, default 25.')
-    parser.add_argument('--search', action='store', dest='keyword', default = None, type = str,
+    parser.add_argument('keyword', nargs='*', default = None, 
                         help='Search a keyword, replace space with hyphen. Does not work with "other" category.')
-    parser.add_argument('--torrents', action='store_true', default=False,
+    parser.add_argument('-T', '--torrents', action='store_true', default=False,
                         help='export the torrents files')
     parser.add_argument('--workers', type=int, default=8,
                         help='number of workers to use, 8 by default.')
+    parser.add_argument('-t', '--transmission',
+                        action='store_true',
+                        help='open magnets with transmission-remote')
+    parser.add_argument('-P', '--port', dest='port',
+                        help='transmission-remote rpc port. default is 9091')
     return parser.parse_args()
 
 def check_args(options):

@@ -9,3 +9,5 @@ mirrors = ['http://kat.cr',
 
 default_headers = {'User-Agent': 'kickass get'}
 default_timeout = 10
+
+transmission_command = ['transmission-remote']
