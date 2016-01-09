@@ -20,6 +20,7 @@ Features:
 - Export data to csv file option
 - Export magnet links to txt file option
 - Export torrent files supported
+- Transmission-remote supported
 - Parallel Processing enabled (default 8 workers, you can change this number according to your CPU cores)
 
 Installation:
@@ -32,9 +33,10 @@ Usage
 =====
 Command-line usage::
 
-    usage: kickass_parse.py [-h] [--category FIELD] [--workers WORKERS] 
-                            [--magnet2file] [--csvfile] [--counts COUNTS]
-
+   usage: kickass_parse.py [-h] [--category FIELD] [--magnet2file] [--csvfile]
+                        [--counts COUNTS] [-T] [--workers WORKERS] [-t]
+                        [-P PORT]
+                        [keyword [keyword ...]]
 
 +--------------------+--------------------------------------------------+
 |Optional Arguments  | Description                                      |
@@ -50,6 +52,12 @@ Command-line usage::
 | --csvfile          | export the data in csv file                      |
 +--------------------+--------------------------------------------------+
 | --counts COUNTS    | number of top torrent links to scrap, default 25.|
++--------------------+--------------------------------------------------+
+| -T, --torrents     |   export the torrents files                      |
++--------------------+--------------------------------------------------+
+| -t, --transmission |    open magnets with transmission-remote         |
++--------------------+--------------------------------------------------+
+|-P PORT, --port PORT|  transmission-remote rpc port. default is 9091   | 
 +--------------------+--------------------------------------------------+
 
 
