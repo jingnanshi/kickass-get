@@ -200,6 +200,9 @@ def page_torrents_traverser(options):
     #     print 'ConnectionError. Prepare to dump current data.'
 
     # transmission block
+    # based on pirate-get: 
+    # https://github.com/vikstrous/pirate-get
+    #
     if options.transmission:
         transmission_command = ['transmission-remote']
         if options.port:
@@ -216,8 +219,6 @@ def page_torrents_traverser(options):
             url = torrent.magnet
             subprocess.call(transmission_command + ['--add', url])
             
-        subprocess.call(args.transmission_command + ['-l'])
-
     
     if options.csvfile or options.magnet2file or options.torrents:
         while True:
