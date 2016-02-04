@@ -12,7 +12,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='kickass-get',
-    version='0.2.2',
+    version='0.2.3',
     description='A command-line interface for kat.cr (Kickass Torrents)',
     long_description=long_description,
     url='https://github.com/jingnanshi/kickass-get',
