@@ -5,8 +5,8 @@
 import sys
 from distutils.version import LooseVersion
 if LooseVersion(sys.version) < LooseVersion("2.7.9"):
-    print("At least python 2.7.9 required. Your version is "+sys.version)
-    sys.exit(1)
+    print("At least python 2.7.9 required for best performance. Your version is "+sys.version)
+    # sys.exit(1)
 
 
 import requests
@@ -27,6 +27,7 @@ import requests_cache
 
 from multiprocessing.pool import ThreadPool as Pool
 
+VERIFY = True;
 
 categories = {'movies' : '/movies', 'new': '/new', 'music': '/music', 'books': '/books', 'xxx':'/xxx',
                 'anime':'/anime', 'tv': '/tv', 'games':'/games', 'apps':'/applications', 'other':'/other' }
@@ -44,7 +45,7 @@ def get_page_magnet_urls(page_url):
     """ get the magnet links on a single page of kat.cr
         tested@1/3/2016
     """
-    response = requests.get(page_url)
+    response = requests.get(page_url, verify= VERIFY)
     soup = bs4.BeautifulSoup(response.text,"html.parser")
     return [a.attrs.get('href') for a in soup.select('div.iaconbox.center.floatright a[href^="magnet:"]')]
 
@@ -52,7 +53,7 @@ def get_page_torrent_links(page_url, root_url):
     """ get links to each individual torrent page links on kat.cr page
     """
     print 'Retriving page at {}.'.format(page_url)
-    response = requests.get(page_url)
+    response = requests.get(page_url, verify= VERIFY)
     # response = session.get(page_url)
     print 'Page retrived.'
 
@@ -86,7 +87,7 @@ def get_torrent_info(page_url):
         return a Torrent object
     """
     # response = session.get(page_url)
-    response = requests.get(page_url)
+    response = requests.get(page_url, verify= VERIFY)
     soup = bs4.BeautifulSoup(response.text,"html.parser")
 
     try:
