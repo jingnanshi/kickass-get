@@ -177,13 +177,15 @@ def page_torrents_traverser(options):
         pages = int(total_counts / len(page_torrents))
 
         for i in range(1, pages):
-            page_links = get_page_torrent_links(index_url + '/' + str(i+1))
+            page_links = get_page_torrent_links(index_url + '/' +
+                                                str(i+1),root_url)
             page_torrents= get_page_torrents(page_links, options.workers, per_page_torrents)
             all_torrents += page_torrents
 
         # add the remaining torrents
         if (total_counts-len(all_torrents)) != 0:
-            page_links = get_page_torrent_links(index_url + '/' + str(pages+1))
+            page_links = get_page_torrent_links(index_url + '/' +
+                                                str(pages+1),root_url)
             page_torrents = get_page_torrents(page_links, options.workers, total_counts-len(all_torrents))
             all_torrents += page_torrents
             
