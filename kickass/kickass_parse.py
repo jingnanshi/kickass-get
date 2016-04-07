@@ -1,4 +1,4 @@
-""" 
+"""
     kar.cr torrenting site scrapper
 
 """
@@ -17,7 +17,8 @@ import command_line
 import string
 import timeit
 import termcolor
-import os.path
+#import os.path
+import os
 from torrent import Torrent
 import printer
 import data
@@ -71,11 +72,11 @@ def get_page_torrents(page_links, workers, numbers):
     while len(page_links) > numbers:
         page_links.pop()
     assert (len(page_links) != 0), 'Number of torrent pages equals to 0!'
-    
+
     torrents = pool.map(get_torrent_info, page_links)
     #torrents = map(get_torrent_info, page_links)
     #torrents = [pool.apply(get_torrent_info, args=(x,)) for x in page_links]
-    
+
     pool.close()
     pool.join()
     return torrents
@@ -104,9 +105,9 @@ def get_torrent_info(page_url):
         c_leechers = soup.select('div.leechBlock > strong')[0].text
         c_update_time = soup.select('time.timeago')[0].text
         c_upload_time = soup.select('time.timeago')[1].text
-        
-        torrent = Torrent(title = c_title, magnet = c_magnet, torrent_cache = c_torrent_cache, 
-                            size = c_size, seeders = c_seeders, leechers = c_leechers, 
+
+        torrent = Torrent(title = c_title, magnet = c_magnet, torrent_cache = c_torrent_cache,
+                            size = c_size, seeders = c_seeders, leechers = c_leechers,
                             update_time = c_update_time, upload_time = c_upload_time)
 
         # filter function to remove non-ascii characters from showing up in terminal
@@ -124,10 +125,10 @@ def page_torrents_traverser(options):
     """
     # check whether arguments are valid
     command_line.check_args(options)
-    
+
     root_url = network.choose_mirror(data.mirrors)
 
-    
+
     if root_url == None:
         sys.exit("No working mirror. Try another time.")
 
@@ -148,14 +149,14 @@ def page_torrents_traverser(options):
     else:
         index_url = root_url + categories[options.category]
 
-    try: 
+    try:
         # base index url
         # change this to enable scrapping of torrents in searched results
         # eg: index_url = 'https://kat.cr/usearch/revenant/'
         # index_url = root_url + categories[options.category]
-        
+
         start = timeit.default_timer()
-        
+
         page_links = get_page_torrent_links(index_url, root_url)
         # per page torrents
         per_page_torrents = len(page_links)
@@ -188,9 +189,9 @@ def page_torrents_traverser(options):
                                                 str(pages+1),root_url)
             page_torrents = get_page_torrents(page_links, options.workers, total_counts-len(all_torrents))
             all_torrents += page_torrents
-            
+
         stop = timeit.default_timer()
-        
+
         print 'Time taken: ', stop-start
 
     except UnicodeEncodeError:
@@ -198,12 +199,12 @@ def page_torrents_traverser(options):
 
     except requests.exceptions.TooManyRedirects:
         print 'Too many redirects. Prepare to dump current data.'
-        
+
     # except requests.exceptions.ConnectionError:
     #     print 'ConnectionError. Prepare to dump current data.'
 
     # transmission block
-    # based on pirate-get: 
+    # based on pirate-get:
     # https://github.com/vikstrous/pirate-get
     #
     if options.transmission:
@@ -221,8 +222,8 @@ def page_torrents_traverser(options):
         for torrent in all_torrents:
             url = torrent.magnet
             subprocess.call(transmission_command + ['--add', url])
-            
-    
+
+
     if options.csvfile or options.magnet2file or options.torrents:
         while True:
             usr_input = raw_input("Enter the path to store file(s) to (q to quit): ").strip()
@@ -239,7 +240,7 @@ def page_torrents_traverser(options):
 
                     # for torrent in all_torrents:
                     #     torrent.save_to_file(usr_input)
-                    # 
+                    #
                     # multiprocessing save torrents to files
 
                     pool.map(lambda x: x.save_to_file(usr_input), all_torrents)
@@ -260,7 +261,7 @@ def page_torrents_traverser(options):
         #     print termcolor.colored('Torrent {}: \n'.format(i), 'red', attrs=['blink'])
         #     print str(all_torrents[i]) + '\n'
         printer.print_torrents(all_torrents)
-        
+
 
         index = command_line.readInt("Choose a torrent using its index (q to quit): ", 'q', 0, len(all_torrents))
 
@@ -273,6 +274,8 @@ def page_torrents_traverser(options):
                 print 'Magnet link: \n'
                 print all_torrents[index].getMagnet() + '\n \n'
                 print termcolor.colored('Enjoy the ride!', 'magenta', attrs=['blink'])
+                #Open the magnet link
+                os.system("open %s" % all_torrents[index].getMagnet())
 
                 if (usr_input == 'both'):
                     usr_input = 'torrent'
@@ -286,7 +289,7 @@ def page_torrents_traverser(options):
                     if os.path.exists(usr_input):
                         all_torrents[index].save_to_file(usr_input)
                         break
-                        
+
                     elif usr_input == 'q':
                         break
                     else:
@@ -294,7 +297,7 @@ def page_torrents_traverser(options):
 
 
     return all_torrents
-    
+
 
 def page_magnet_traverser(category,total_counts):
     """ get total_counts number of magnet links on kat.cr
@@ -307,7 +310,7 @@ def page_magnet_traverser(category,total_counts):
 
     # magnets on the first page
     page_magnets = get_page_magnet_urls(index_url)
-            
+
     all_magnets = []
     all_magnets += page_magnets
 
@@ -334,12 +337,12 @@ def write_torrent_to_file(torrent, save_path, onlyMagnet = False, allData = True
 
     if onlyMagnet:
         f = open(file_path_m,'w')
-        f.write(torrent.magnet + delim) 
-        f.close() 
+        f.write(torrent.magnet + delim)
+        f.close()
 
     if allData:
         f = open(file_path_t,'w')
-        f.write(str(torrent) + csvdelim) 
+        f.write(str(torrent) + csvdelim)
         f.close()
 
 def write_torrents_to_file(torrents_list, save_path, onlyMagnet = False, allData = True):
@@ -354,13 +357,13 @@ def write_torrents_to_file(torrents_list, save_path, onlyMagnet = False, allData
     if onlyMagnet:
         f = open(file_path_m,'w')
         for torrent in torrents_list:
-            f.write(torrent.magnet + delim) 
-        f.close() 
+            f.write(torrent.magnet + delim)
+        f.close()
 
     if allData:
         f = open(file_path_t,'w')
         for torrent in torrents_list:
-            f.write(str(torrent) + csvdelim) 
+            f.write(str(torrent) + csvdelim)
         f.close()
 
 def write_to_file(url_list, csv = False):
@@ -373,9 +376,9 @@ def write_to_file(url_list, csv = False):
     f = open('results.txt','w')
 
     for link in url_list:
-        f.write(link + delim) 
+        f.write(link + delim)
 
-    f.close() 
+    f.close()
 
 def save_torrent(torrent, save_path):
     torrent.save_to_file(save_path)
@@ -385,12 +388,11 @@ def main():
     page_torrents_traverser(command_line.parse_args())
 
 if __name__ == '__main__':
-    
+
     # start = timeit.default_timer()
-    
+
     main()
-    
+
     # stop = timeit.default_timer()
 
-    # print stop - start  
-    
+    # print stop - start
