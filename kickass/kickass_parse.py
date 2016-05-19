@@ -226,30 +226,33 @@ def page_torrents_traverser(options):
 
     if options.csvfile or options.magnet2file or options.torrents:
         while True:
-            usr_input = raw_input("Enter the path to store file(s) to (q to quit): ").strip()
-            if os.path.exists(usr_input):
+            if options.destpath:
+                dest_path = options.destpath
+            else:
+                dest_path = raw_input("Enter the path to store file(s) to (q to quit): ").strip()
+            if os.path.exists(dest_path):
 
                 if options.csvfile:
-                    write_torrents_to_file(all_torrents, usr_input) # csv data output to file
+                    write_torrents_to_file(all_torrents, dest_path) # csv data output to file
 
                 if options.magnet2file:
-                    write_torrents_to_file(all_torrents, usr_input, True) # write magnet links to file
+                    write_torrents_to_file(all_torrents, dest_path, True) # write magnet links to file
 
                 if options.torrents:
                     pool = Pool(processes=options.workers)
 
                     # for torrent in all_torrents:
-                    #     torrent.save_to_file(usr_input)
+                    #     torrent.save_to_file(dest_path)
                     #
                     # multiprocessing save torrents to files
 
-                    pool.map(lambda x: x.save_to_file(usr_input), all_torrents)
+                    pool.map(lambda x: x.save_to_file(dest_path), all_torrents)
 
                     pool.close()
                     pool.join()
                     break;
 
-            elif usr_input == 'q':
+            elif dest_path == 'q':
                 break;
             else:
                 print termcolor.colored('Path does not exist. \n', 'red')
@@ -284,13 +287,13 @@ def page_torrents_traverser(options):
 
             if (usr_input == 'torrent'):
                 while True:
-                    usr_input = raw_input("Enter the path to store file to (q to quit): ").strip()
+                    dest_path = raw_input("Enter the path to store file to (q to quit): ").strip()
 
-                    if os.path.exists(usr_input):
-                        all_torrents[index].save_to_file(usr_input)
+                    if os.path.exists(dest_path):
+                        all_torrents[index].save_to_file(dest_path)
                         break
 
-                    elif usr_input == 'q':
+                    elif dest_path == 'q':
                         break
                     else:
                         print termcolor.colored('Path does not exist. \n', 'red')

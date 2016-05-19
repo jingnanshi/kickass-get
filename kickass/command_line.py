@@ -20,6 +20,8 @@ def parse_args():
                         help='Search keywords. Does not work with "other" category.')
     parser.add_argument('-T', '--torrents', action='store_true', default=False,
                         help='export the torrents files')
+    parser.add_argument('--destpath', type=str, default=None,
+                        help='supply a path to output directory')
     parser.add_argument('--workers', type=int, default=8,
                         help='number of workers to use, 8 by default.')
     parser.add_argument('-t', '--transmission',
